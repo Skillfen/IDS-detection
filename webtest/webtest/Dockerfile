@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the Spring Boot jar file into the container
-COPY webtest-0.0.1-SNAPSHOT.jar app.jar
+COPY target/webtest-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port the app will run on
 EXPOSE 8080
