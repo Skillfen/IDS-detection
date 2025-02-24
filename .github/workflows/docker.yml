@@ -33,8 +33,7 @@ jobs:
 
     - name: Run Docker Compose up
       run: |
-        cd /webtest/webtest/docker-compose.yaml
-        docker-compose up -d 
+        docker-compose ./webtest/webtest/docker-compose.yaml up -d 
 
     - name: Verify app is running
       run: |
