@@ -1,0 +1,11 @@
+com\example\webtest\utils\SecurityUtils.class
+com\example\webtest\controller\LogsController.class
+com\example\webtest\service\EmailService.class
+com\example\webtest\utils\AttackPatterns.class
+com\example\webtest\repository\LogRepository.class
+com\example\webtest\service\DetectionService.class
+com\example\webtest\controller\EmailController.class
+com\example\webtest\controller\HttpRequestController.class
+com\example\webtest\repository\HttpRequestRepository.class
+com\example\webtest\WebtestApplication.class
+com\example\webtest\model\HttpRequest.class
