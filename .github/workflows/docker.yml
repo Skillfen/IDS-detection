@@ -29,12 +29,12 @@ jobs:
       run: sudo apt-get install docker-compose
 
     - name: Build Docker images with Docker Compose
-      run: docker-compose build
+      run: docker-compose -f ./webtest/webtest/docker-compose.yaml build
 
     - name: Run Docker Compose up
       run: |
-        cd webtest/webtest
-        docker-compose up -d
+        cd webtest/webtest/docker-compose.yaml
+        docker-compose up -d 
 
     - name: Verify app is running
       run: |
