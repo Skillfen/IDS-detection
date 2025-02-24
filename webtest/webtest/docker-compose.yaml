@@ -10,7 +10,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - h2database
-    entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app.jar"]
+    entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
 
   h2database:
     image: oscarfonts/h2:latest
