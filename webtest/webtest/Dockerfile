@@ -14,4 +14,4 @@ RUN chmod +x /wait-for-it.sh
 EXPOSE 8080
 
 # Run the application with wait-for-it to ensure the database is ready
-ENTRYPOINT ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app.jar"]
+ENTRYPOINT ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
