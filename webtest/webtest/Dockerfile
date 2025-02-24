@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Copy the Spring Boot jar file into the container
 COPY target/webtest-0.0.1-SNAPSHOT.jar app.jar
+# Copy wait-for-it script into the container
+COPY wait-for-it.sh /wait-for-it.sh
 
 # Expose the port the app will run on
 EXPOSE 8080
