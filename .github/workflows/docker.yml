@@ -18,6 +18,9 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'  # Specify JDK distribution
+        
+    - name: List directory contents
+      run: ls -R
 
     - name: Build the Spring Boot app with Maven
       run: mvn clean install -DskipTests ./webtest/webtest/pom.xml
