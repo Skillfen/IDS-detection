@@ -36,6 +36,7 @@ jobs:
         docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
     - name: see docker log
       run: |
+        cd /webtest/webtest/
         docker-compose logs springboot-app
         
     - name: Verify app is running
