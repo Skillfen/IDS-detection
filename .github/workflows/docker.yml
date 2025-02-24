@@ -23,7 +23,7 @@ jobs:
       run: ls -R
 
     - name: Build the Spring Boot app with Maven
-      run: mvn clean install -DskipTests ./webtest/webtest/
+      run: mvn clean install -DskipTests -f ./webtest/webtest/pom.xml
 
     - name: Set up Docker Compose
       run: sudo apt-get install docker-compose
