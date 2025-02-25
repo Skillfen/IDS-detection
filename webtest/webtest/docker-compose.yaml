@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   springboot-app:
     build: .
@@ -12,17 +12,24 @@ services:
     depends_on:
       - h2database
     entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
+    networks:
+      - app-network
 
   h2database:
-     command: 
+    image: h2database/h2  # Add official H2 image
+    command: 
       - "-web" 
       - "-webAllowOthers" 
       - "-tcp" 
       - "-tcpAllowOthers" 
       - "-webPort" 
-      - "8082"  # Port for H2 web console
+      - "8082"
     ports:
-      - "1521:1521"  # TCP port for database connections
-      - "8082:8082"  # Web console port
+      - "1521:1521"
+      - "8082:8082"
     networks:
       - app-network
+
+networks:  # Add network definition
+  app-network:
+    driver: bridge
