@@ -2,7 +2,7 @@ version: '3'
 services:
   springboot-app:
     build: .
-    image: mohamedelhamzi203/idsdetection:${TAG:-latest}
+    image: mohamedelhamzi203/idsdetection:latest
     ports:
       - "8080:8080"
     environment:
