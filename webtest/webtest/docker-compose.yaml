@@ -6,30 +6,23 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2database:1521/mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2database:1521/mem:testdb
     depends_on:
-      - h2database
-    entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
+      h2database:
+        condition: service_healthy
     networks:
       - app-network
 
   h2database:
-    image: h2database/h2  # Add official H2 image
-    command: 
-      - "-web" 
-      - "-webAllowOthers" 
-      - "-tcp" 
-      - "-tcpAllowOthers" 
-      - "-webPort" 
-      - "8082"
+    image: oscarfonts/h2  # Use this verified H2 image
     ports:
-      - "1521:1521"
-      - "8082:8082"
+      - "1521:1521"  # H2 TCP port
+      - "8082:81"    # H2 web console port (81 internally)
+    environment:
+      H2_OPTIONS: -tcp -tcpAllowOthers -web -webAllowOthers
     networks:
       - app-network
 
-networks:  # Add network definition
+networks:
   app-network:
     driver: bridge
