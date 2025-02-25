@@ -44,6 +44,6 @@ jobs:
         # Login with credentials
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         # Push images
-        docker-compose -f docker-compose.yml build
+        docker-compose -f ./webtest/webtest/docker-compose.yaml build
         docker tag springboot-app:latest ${{ secrets.DOCKER_USERNAME }}/idsdetection:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/idsdetection:latest
