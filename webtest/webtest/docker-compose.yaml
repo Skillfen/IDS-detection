@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 services:
   springboot-app:
     build: .
@@ -6,23 +6,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2database:1521/mem:testdb
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2database:1521/mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: password
     depends_on:
-      h2database:
-        condition: service_healthy
-    networks:
-      - app-network
+      - h2database
+    entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
 
   h2database:
-    image: oscarfonts/h2  # Use this verified H2 image
+    image: oscarfonts/h2:latest
     ports:
-      - "1521:1521"  # H2 TCP port
-      - "8082:81"    # H2 web console port (81 internally)
+      - "1521:1521"
     environment:
       H2_OPTIONS: -tcp -tcpAllowOthers -web -webAllowOthers
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
