@@ -19,6 +19,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    # Install Docker Compose
+    - name: Set up Docker Compose
+      uses: docker/setup-compose-action@v2  # <-- This fixes the issue
+
     - name: Build the Spring Boot app with Maven
       run: mvn clean install -DskipTests -f ./webtest/webtest/pom.xml
 
