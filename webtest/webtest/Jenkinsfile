@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from the repository
-                git 'https://github.com/your-repository/your-project.git'
+                git 'https://github.com/Skillfen/IDS-detection.git'
             }
         }
 
