@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define environment variables, if needed
+        DOCKER_REGISTRY = "192.168.253.142:8083"
+        IMAGE_NAME = "myimage"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from the repository
+                git 'https://github.com/your-repository/your-project.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                script {
+                    // Build the project using Maven
+                    sh 'mvn clean install'
+                }
+            }
+        }
+
+        stage('Test with Maven') {
+            steps {
+                script {
+                    // Run tests with Maven
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image and tag it
+                    sh 'docker build -t $DOCKER_REGISTRY/$IMAGE_NAME .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Login to Docker registry
+                    sh 'docker login -u admin -p admin $DOCKER_REGISTRY'
+
+                    // Push the Docker image to the registry
+                    sh 'docker push $DOCKER_REGISTRY/$IMAGE_NAME:2.0'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up or perform any final actions
+            echo 'Pipeline finished.'
+        }
+
+        success {
+            echo 'Build and Docker image push were successful.'
+        }
+
+        failure {
+            echo 'There was an issue with the build or Docker push.'
+        }
+    }
+}
