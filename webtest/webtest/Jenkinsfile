@@ -12,6 +12,7 @@ pipeline {
             steps {
                 // Checkout the code from the repository
                 git 'https://github.com/Skillfen/IDS-detection.git'
+                git checkout main
             }
         }
 
