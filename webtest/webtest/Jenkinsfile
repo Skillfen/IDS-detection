@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build the project using Maven
-                    sh 'cd webtest/webtest | mvn clean install'
+                    sh 'mvn clean install -f /var/jenkins_home/workspace/my-pipelines-app/webtest/webtest/pom.xml'
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     // Run tests with Maven
-                    sh 'mvn test'
+                    sh 'mvn test -f /var/jenkins_home/workspace/my-pipelines-app/webtest/webtest/pom.xml'
                 }
             }
         }
