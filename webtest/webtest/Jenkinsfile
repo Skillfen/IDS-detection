@@ -6,6 +6,9 @@ pipeline {
         DOCKER_REGISTRY = "192.168.253.142:8083"
         IMAGE_NAME = "myimage"
     }
+    tools {
+        maven 'maven-repo'  // Name of the Maven tool configuration in Jenkins
+    }
 
     stages {
         stage('Checkout') {
