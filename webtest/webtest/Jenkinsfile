@@ -24,6 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build the project using Maven
+                    sh 'cd webtest/webtest'
                     sh 'mvn clean install'
                 }
             }
