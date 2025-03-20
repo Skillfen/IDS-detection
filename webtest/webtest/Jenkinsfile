@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image and tag it
-                    sh 'docker build -t $DOCKER_REGISTRY/$IMAGE_NAME .'
+                    sh 'docker build -t $DOCKER_REGISTRY/$IMAGE_NAME /var/jenkins_home/workspace/my-pipelines-app/webtest/webtest/.'
                 }
             }
         }
