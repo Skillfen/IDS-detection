@@ -11,8 +11,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from the repository
-                git 'https://github.com/Skillfen/IDS-detection.git'
-                git checkout main
+                checkout([$class: 'GitSCM', 
+                              branches: [[name: '*/main']], // Specify branch name here
+                              userRemoteConfigs: [[url: 'https://github.com/Skillfen/IDS-detection.git']]])
             }
         }
 
