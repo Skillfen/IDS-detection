@@ -1,12 +1,13 @@
-name: Docker Spring Boot CI/CD
+name: DevSecOps CI/CD
 
 on:
   push:
-    branches:
-      - main  # Trigger on push to the main branch
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  devsecops_pipeline:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,23 +18,103 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'  # Specify JDK distribution
-        
-    - name: List directory contents
-      run: ls -R
 
-    - name: Build the Spring Boot app with Maven
-      run: mvn clean install -DskipTests -f ./webtest/webtest/pom.xml
+    ##############################
+    # 1️⃣ Build Maven & Tests
+    ##############################
+    - name: Build and run Maven tests
+      run: mvn clean test -f ./webtest/webtest/pom.xml
 
-    - name: Set up Docker Compose
-      run: sudo apt-get install docker-compose
+    - name: Generate JaCoCo coverage
+      run: mvn jacoco:report -f ./webtest/webtest/pom.xml
 
-    - name: Build Docker images with Docker Compose
-      run: docker-compose -f ./webtest/webtest/docker-compose.yaml build
-
-    - name: Run Docker Compose up
+    - name: Copy test reports
       run: |
-        docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
+        mkdir -p tests/reports/unit tests/reports/coverage
+        cp -r ./webtest/webtest/target/surefire-reports/* tests/reports/unit/
+        cp -r ./webtest/webtest/target/site/jacoco/* tests/reports/coverage/
+
+    ##############################
+    # 2️⃣ SAST - CodeQL
+    ##############################
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+    - name: Save CodeQL results
+      run: |
+        mkdir -p tests/reports/codeql
+        cp -r codeql-results/* tests/reports/codeql/ || true
+
+    ##############################
+    # 3️⃣ Docker + Trivy scan
+    ##############################
+    - name: Build Docker image
+      run: docker build -t springboot-app ./webtest/webtest
+
+    - name: Scan Docker image with Trivy
+      run: |
+        trivy image --format json --output trivy-report.json springboot-app
+        mkdir -p tests/reports/trivy
+        mv trivy-report.json tests/reports/trivy/
+
+    ##############################
+    # 4️⃣ Start application with Docker Compose
+    ##############################
+    - name: Start Docker Compose
+      run: docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
+
+    - name: Wait for Spring Boot app to be ready
+      run: |
+        echo "Waiting for Spring Boot to start..."
+        sleep 20  # tu peux remplacer par wait-for-it.sh pour un check sur le port 8080
+
+    ##############################
+    # 5️⃣ SonarQube Scan
+    ##############################
+    - name: SonarQube Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        args: >
+          -Dsonar.projectKey=my-project
+          -Dsonar.organization=my-org
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    - name: Copy SonarQube report
+      run: |
+        mkdir -p tests/reports/sonarqube
+        cp -r .scannerwork/* tests/reports/sonarqube/ || true
+
+    ##############################
+    # 6️⃣ OWASP ZAP scan
+    ##############################
+    - name: Run OWASP ZAP
+      run: |
+        docker run --rm -t owasp/zap2docker-stable zap-full-scan.py \
+          -t http://localhost:8080 -r zap-report.html
+        mkdir -p tests/reports/zap
+        mv zap-report.html tests/reports/zap/
+
+    ##############################
+    # 7️⃣ Stop Docker Compose
+    ##############################
+    - name: Stop Docker Compose
+      run: docker-compose -f ./webtest/webtest/docker-compose.yaml down
+
+    ##############################
+    # 8️⃣ Upload all reports
+    ##############################
+    - name: Upload all test & scan reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: devsecops-reports
+        path: tests/reports/
+
     - name: see docker log
       run: |
         docker-compose -f ./webtest/webtest/docker-compose.yaml logs springboot-app
