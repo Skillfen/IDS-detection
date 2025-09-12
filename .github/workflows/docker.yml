@@ -110,7 +110,7 @@ jobs:
     # 8️⃣ Upload all reports
     ##############################
     - name: Upload all test & scan reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: devsecops-reports
         path: tests/reports/
