@@ -89,6 +89,7 @@ jobs:
     ##############################
     - name: Run OWASP ZAP
       run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         docker run --rm -t owasp/zap2docker-stable zap-full-scan.py \
           -t http://localhost:8080 -r zap-report.html
         mkdir -p tests/reports/zap
