@@ -35,8 +35,8 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@master
       with:
         args: >
-          -Dsonar.projectKey=my-project
-          -Dsonar.organization=my-org
+          -Dsonar.projectKey=Skillfen_IDS-detection
+          -Dsonar.organization=skillfen
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
@@ -71,7 +71,8 @@ jobs:
     # 4️⃣ Start application with Docker Compose
     ##############################
     - name: Start Docker Compose
-      run: docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
+      run: sudo apt-get install docker-compose-plugin
+           docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
 
     - name: Wait for Spring Boot app to be ready
       run: |
