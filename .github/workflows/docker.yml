@@ -90,10 +90,11 @@ jobs:
     - name: Run OWASP ZAP
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        docker run --rm -t zaproxy/zap-stable:latest \
-          -t http://localhost:8080 -r zap-report.html
-        mkdir -p tests/reports/zap
-        mv zap-report.html tests/reports/zap/
+        docker run --rm -v $(pwd):/zap/wrk:rw \
+         zaproxy/zap-stable:latest zap-baseline.py \
+          -t http://localhost:8080 -r zap_report.html
+           mkdir -p tests/reports/zap
+           mv zap-report.html tests/reports/zap/
 
     ##############################
     # 7️⃣ Stop Docker Compose
