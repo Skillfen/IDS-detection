@@ -11,6 +11,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - h2database
+    networks:
+      - idsnet
     entrypoint: ["/wait-for-it.sh", "h2database:1521", "--", "java", "-jar", "/app/app.jar"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -25,3 +27,8 @@ services:
       - "1521:1521"
     environment:
       H2_OPTIONS: -tcp -tcpAllowOthers -web -webAllowOthers
+    networks:
+      - idsnet
+  networks:
+    idsnet:
+      name: idsnet
