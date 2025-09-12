@@ -89,8 +89,15 @@ jobs:
     ##############################
     - name: Run ZAP Scan
       run: |
+        # Récupérer le réseau créé par docker-compose
+        NETWORK=$(docker network ls --format "{{.Name}}" | grep ids-detection_default)
+
+        # Vérifier que le réseau existe
+        echo "Using network: $NETWORK"
+
+        # Lancer ZAP en utilisant le réseau docker-compose
         docker run --rm \
-          --network ids-detection_default \
+          --network $NETWORK \
           -v $(pwd):/zap/wrk/:rw \
           zaproxy/zap-stable zap-baseline.py \
           -t http://springboot-app:8080 \
