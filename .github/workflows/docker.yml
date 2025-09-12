@@ -77,7 +77,7 @@ jobs:
     ##############################
     - name: Start Docker Compose
       run: |
-           sudo apt-get install docker-compose-plugin
+           sudo apt-get install docker-compose
            docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
 
     - name: Wait for Spring Boot app to be ready
