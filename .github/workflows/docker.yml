@@ -28,19 +28,21 @@ jobs:
     - name: Build Maven project
       working-directory: ./webtest/webtest
       run: mvn clean install -DskipTests
+           mvn clean package
     ##############################
      # 5️⃣ SonarQube Scan
     ##############################
-    - name: SonarQube Scan
-      uses: sonarsource/sonarcloud-github-action@master
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarqube-scan-action@v5
       with:
+        projectBaseDir: .
         args: >
           -Dsonar.projectKey=Skillfen_IDS-detection
           -Dsonar.organization=skillfen
           -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-        extraProperties: |
-           sonar.java.binaries=webtest/webtest/target/classes
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.java.binaries=webtest/webtest/target/classes
+
 
     - name: Copy SonarQube report
       run: |
