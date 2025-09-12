@@ -27,7 +27,8 @@ jobs:
       run: mvn clean test -f ./webtest/webtest/pom.xml
     - name: Build Maven project
       working-directory: ./webtest/webtest
-      run: mvn clean install -DskipTests
+      run: |
+           mvn clean install -DskipTests
            mvn clean package
     ##############################
      # 5️⃣ SonarQube Scan
