@@ -40,6 +40,8 @@ jobs:
       with:
        threads: 4
        category: "/language:java"
+       checkout_path: ./webtest/webtest
+
        
     - name: Save CodeQL results
       run: |
