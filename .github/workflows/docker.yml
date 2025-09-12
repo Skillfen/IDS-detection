@@ -31,17 +31,16 @@ jobs:
     # 2️⃣ SAST - CodeQL
     ##############################
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: java
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
+       threads: 4
        category: "/language:java"
-       args: >
-          --source-root ./webtest/webtest/src/main/java
-
+       
     - name: Save CodeQL results
       run: |
         mkdir -p tests/reports/codeql
