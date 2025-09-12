@@ -25,22 +25,25 @@ jobs:
     ##############################
     - name: Build and run Maven tests
       run: mvn clean test -f ./webtest/webtest/pom.xml
-    - name: Build project before CodeQL
-      run: mvn clean install -DskipTests -f ./webtest/webtest/pom.xml
+    - name: Build Maven project
+      working-directory: ./webtest/webtest
+      run: mvn clean install -DskipTests
+
 
     # 2️⃣ SAST - CodeQL
     ##############################
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v2
       with:
         languages: java
 
-    - name: Perform CodeQL Analysis
+    - name: Run CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
        threads: 4
        category: "/language:java"
        checkout_path: ./webtest/webtest
+
 
        
     - name: Save CodeQL results
