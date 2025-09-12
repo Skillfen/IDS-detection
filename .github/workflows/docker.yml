@@ -25,6 +25,9 @@ jobs:
     ##############################
     - name: Build and run Maven tests
       run: mvn clean test -f ./webtest/webtest/pom.xml
+    - name: Build project before CodeQL
+      run: mvn clean install -DskipTests -f ./webtest/webtest/pom.xml
+
     # 2️⃣ SAST - CodeQL
     ##############################
     - name: Initialize CodeQL
