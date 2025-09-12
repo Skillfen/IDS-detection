@@ -39,12 +39,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y wget apt-transport-https gnupg lsb-release
         wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
         sudo apt-get update
         sudo apt-get install -y trivy
-        trivy image --format json --output trivy-report.json springboot-app
         mkdir -p tests/reports/trivy
-        mv trivy-report.json tests/reports/trivy/
+        trivy image --format json --output tests/reports/trivy/trivy-report.json springboot-app
+    - name: Upload Trivy report
+      uses: actions/upload-artifact@v4
+      with:
+       name: trivy-report
+       path: tests/reports/trivy/trivy-report.json
 
     ##############################
     # 4️⃣ Start application with Docker Compose
