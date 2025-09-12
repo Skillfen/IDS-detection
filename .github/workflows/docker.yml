@@ -39,6 +39,8 @@ jobs:
           -Dsonar.organization=skillfen
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        extraProperties: |
+           sonar.java.binaries=webtest/webtest/target/classes
 
     - name: Copy SonarQube report
       run: |
