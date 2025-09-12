@@ -29,6 +29,23 @@ jobs:
       working-directory: ./webtest/webtest
       run: mvn clean install -DskipTests
     ##############################
+     # 5️⃣ SonarQube Scan
+    ##############################
+    - name: SonarQube Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        args: >
+          -Dsonar.projectKey=my-project
+          -Dsonar.organization=my-org
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    - name: Copy SonarQube report
+      run: |
+        mkdir -p tests/reports/sonarqube
+        cp -r .scannerwork/* tests/reports/sonarqube/ || true
+
+    ##############################
     # 3️⃣ Docker + Trivy scan
     ##############################
     - name: Build Docker image
@@ -61,24 +78,6 @@ jobs:
         echo "Waiting for Spring Boot to start..."
         sleep 20  # tu peux remplacer par wait-for-it.sh pour un check sur le port 8080
 
-    ##############################
-    # 5️⃣ SonarQube Scan
-    ##############################
-    - name: SonarQube Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      with:
-        args: >
-          -Dsonar.projectKey=my-project
-          -Dsonar.organization=my-org
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
-    - name: Copy SonarQube report
-      run: |
-        mkdir -p tests/reports/sonarqube
-        cp -r .scannerwork/* tests/reports/sonarqube/ || true
-
-    ##############################
     # 6️⃣ OWASP ZAP scan
     ##############################
     - name: Run OWASP ZAP
