@@ -25,17 +25,6 @@ jobs:
     ##############################
     - name: Build and run Maven tests
       run: mvn clean test -f ./webtest/webtest/pom.xml
-
-    - name: Generate JaCoCo coverage
-      run: mvn jacoco:report -f ./webtest/webtest/pom.xml
-
-    - name: Copy test reports
-      run: |
-        mkdir -p tests/reports/unit tests/reports/coverage
-        cp -r ./webtest/webtest/target/surefire-reports/* tests/reports/unit/
-        cp -r ./webtest/webtest/target/site/jacoco/* tests/reports/coverage/
-
-    ##############################
     # 2️⃣ SAST - CodeQL
     ##############################
     - name: Initialize CodeQL
