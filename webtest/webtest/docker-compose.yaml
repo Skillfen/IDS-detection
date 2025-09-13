@@ -30,7 +30,7 @@ services:
     networks:
       - idsnet
   zap:
-    image: owasp/zap2docker-stable:latest
+    image: zaproxy/zap-stable:latest
     depends_on:
       - springboot-app
     networks:
