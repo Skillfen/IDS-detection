@@ -29,6 +29,12 @@ services:
       H2_OPTIONS: -tcp -tcpAllowOthers -web -webAllowOthers
     networks:
       - idsnet
+  zap:
+    image: owasp/zap2docker-stable
+    depends_on:
+      - springboot-app
+    networks:
+      - idsnet
 
 networks:       
   idsnet:
