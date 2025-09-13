@@ -95,15 +95,7 @@ jobs:
 
     - name: Run ZAP Baseline Scan
       run: |
-       docker network ls
-       docker run --rm \
-       --user root \
-       --network idsnet \
-       -v $(pwd):/zap/wrk/:rw \
-       zaproxy/zap-stable zap-baseline.py \
-       -t http://springboot-app:8080/http-request/login \
-       -r zap_report.html \
-       -J zap_report.json
+       docker-compose run zap zap-baseline.py -t http://springboot-app:8080 -r zap_report.html -J zap_report.json
 
     ##############################
     # 7️⃣ Stop Docker Compose
