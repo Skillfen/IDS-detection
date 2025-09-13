@@ -95,7 +95,7 @@ jobs:
 
     - name: Run ZAP Baseline Scan
       run: |
-       echo "Using network: $NETWORK"
+       docker network ls
        docker run --rm \
        --user root \
        --network idsnet \
