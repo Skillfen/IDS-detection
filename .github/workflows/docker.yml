@@ -95,10 +95,10 @@ jobs:
 
     - name: Run ZAP Baseline Scan
       run: |
-       NETWORK=idsnet
        echo "Using network: $NETWORK"
        docker run --rm \
-       --network $NETWORK \
+       --user root \
+       --network idsnet \
        -v $(pwd):/zap/wrk/:rw \
        zaproxy/zap-stable zap-baseline.py \
        -t http://springboot-app:8080 \
