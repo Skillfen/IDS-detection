@@ -80,29 +80,30 @@ jobs:
            sudo apt-get install docker-compose
            docker-compose -f ./webtest/webtest/docker-compose.yaml up -d
 
-    - name: Wait for Spring Boot app to be ready
+    - name: Start app with docker-compose
       run: |
-        echo "Waiting for Spring Boot to start..."
-        sleep 20  # tu peux remplacer par wait-for-it.sh pour un check sur le port 8080
+        docker-compose -f webtest/webtest/docker-compose.yaml up -d
+        echo "Waiting for springboot-app to be healthy..."
+         for i in {1..10}; do
+         if docker inspect --format='{{.State.Health.Status}}' $(docker ps -qf "name=springboot-app") | grep -q "healthy"; then
+           echo "App is healthy!"
+           break
+         fi
+         echo "Waiting..."
+        sleep 10
+        done
 
-    # 6️⃣ OWASP ZAP scan
-    ##############################
-    - name: Run ZAP Scan
+    - name: Run ZAP Baseline Scan
       run: |
-        # Récupérer le réseau créé par docker-compose
-        NETWORK=$(docker network ls --format "{{.Name}}" | grep ids-detection_default)
-
-        # Vérifier que le réseau existe
-        echo "Using network: $NETWORK"
-
-        # Lancer ZAP en utilisant le réseau docker-compose
-        docker run --rm \
-          --network $NETWORK \
-          -v $(pwd):/zap/wrk/:rw \
-          zaproxy/zap-stable zap-baseline.py \
-          -t http://springboot-app:8080 \
-          -r zap_report.html \
-          -J zap_report.json
+       NETWORK=idsnet
+       echo "Using network: $NETWORK"
+       docker run --rm \
+       --network $NETWORK \
+       -v $(pwd):/zap/wrk/:rw \
+       zaproxy/zap-stable zap-baseline.py \
+       -t http://springboot-app:8080 \
+       -r zap_report.html \
+       -J zap_report.json
 
     ##############################
     # 7️⃣ Stop Docker Compose
