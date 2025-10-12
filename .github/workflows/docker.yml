@@ -93,7 +93,9 @@ jobs:
         sleep 10
         done
     - name: Create ZAP output folder
-      run: mkdir -p tests/reports/zap
+      run: |
+           mkdir -p tests/reports/zap
+           chmod -R 777 tests/reports/zap
 
     - name: Run OWASP ZAP Full Scan (manual Docker)
       run: |
