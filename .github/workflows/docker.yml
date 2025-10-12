@@ -65,7 +65,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y trivy
         mkdir -p tests/reports/trivy
-        mkdir -p tests/reports/zap
         trivy image --format json --output tests/reports/trivy/trivy-report.json springboot-app
     - name: Upload Trivy report
       uses: actions/upload-artifact@v4
@@ -93,6 +92,8 @@ jobs:
          echo "Waiting..."
         sleep 10
         done
+    - name: Create ZAP output folder
+      run: mkdir -p tests/reports/zap
 
     - name: Run OWASP ZAP Baseline Scan
       uses: zaproxy/action-full-scan@v0.12.0
