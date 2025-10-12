@@ -35,6 +35,7 @@ services:
       - springboot-app
     networks:
       - idsnet
+    user: root
     volumes:
       - ./:/zap/wrk
 
