@@ -117,11 +117,6 @@ jobs:
       with:
         name: zap-report
         path: tests/reports/zap
-    - name: Download ZAP artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: zap-report
-        path: tests/reports/zap
     # 7️⃣ Stop Docker Compose
     ##############################
     - name: Stop Docker Compose
