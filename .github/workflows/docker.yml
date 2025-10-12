@@ -93,11 +93,18 @@ jobs:
         sleep 10
         done
 
-    - name: Run ZAP Baseline Scan
-      run: |
-       docker-compose -f ./webtest/webtest/docker-compose.yaml exec zap zap-baseline.py -t http://springboot-app:8080/http-request/login -r zap_report.html -J zap_report.json
-
-
+    - name: Run OWASP ZAP Baseline Scan
+      uses: zaproxy/action-full-scan@v0.0.1
+      with:
+        target: 'http://localhost:8080/http-request/login'  # Replace with your app's URL
+        fail-on-highest-severity-only: true
+    # 3️⃣ Upload ZAP Reports
+    ##############################
+    - name: Upload ZAP report
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-report
+        path: zap_report.html  # Path to your ZAP report (HTML)
     ##############################
     # 7️⃣ Stop Docker Compose
     ##############################
