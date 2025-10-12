@@ -98,14 +98,7 @@ jobs:
       with:
         target: 'http://springboot-app:8080/http-request/login'  # Replace with your app's URL
         fail-on-highest-severity-only: true
-    # 3️⃣ Upload ZAP Reports
-    ##############################
-    - name: Upload ZAP report
-      uses: actions/upload-artifact@v4
-      with:
-        name: zap-report
-        path: zap_report.html  # Path to your ZAP report (HTML)
-    ##############################
+        report-path: ./tests/reports/zap/
     # 7️⃣ Stop Docker Compose
     ##############################
     - name: Stop Docker Compose
