@@ -101,6 +101,11 @@ jobs:
         target: 'http://springboot-app:8080/http-request/login'
         fail_action: false 
         artifact_name: zap-report
+    - name: Download ZAP artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: zap-report
+        path: tests/reports/zap
     # 7️⃣ Stop Docker Compose
     ##############################
     - name: Stop Docker Compose
