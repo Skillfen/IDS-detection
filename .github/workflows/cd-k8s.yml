@@ -67,6 +67,8 @@ jobs:
       run: |
         eval $(minikube -p minikube docker-env)
         docker compose -f ./webtest/webtest/docker-compose.yaml build
+        docker images
+        minikube image load springboot-app:latest
 
     ##############################
     # 6️⃣ Déployer Spring Boot + H2 dans Kubernetes
@@ -76,10 +78,21 @@ jobs:
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/ingress.yaml || true
-        kubectl wait --for=condition=available --timeout=120s deployment/springboot-deployment
+        kubectl get pods -o wide
+        kubectl wait --for=condition=available --timeout=300s deployment/springboot-deployment
 
     ##############################
-    # 7️⃣ Installer et exécuter Terraform
+    # 7️⃣ Vérifier les logs du Pod (debug en cas d’échec)
+    ##############################
+    - name: Debug pod startup
+      if: failure()
+      run: |
+        kubectl get pods -o wide
+        kubectl describe deployment springboot-deployment
+        kubectl logs -l app=springboot-app --tail=50 || true
+
+    ##############################
+    # 8️⃣ Installer et exécuter Terraform
     ##############################
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
@@ -96,7 +109,7 @@ jobs:
         terraform apply -auto-approve tfplan
 
     ##############################
-    # 8️⃣ Vérifier le déploiement
+    # 9️⃣ Vérifier le déploiement final
     ##############################
     - name: Get pods & services
       run: |
