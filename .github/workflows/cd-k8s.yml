@@ -1,1 +1,85 @@
+name: CD Minikube + Terraform
+
+on:
+  workflow_run:
+    workflows: ["DevSecOps CI/CD"]  # Nom exact du workflow CI
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    ##############################
+    # 1️⃣ Installer Docker et Docker Compose
+    ##############################
+    - name: Setup Docker
+      uses: docker/setup-buildx-action@v2
+
+    ##############################
+    # 2️⃣ Installer Minikube et kubectl
+    ##############################
+    - name: Install Minikube & kubectl
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        sudo curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    ##############################
+    # 3️⃣ Démarrer Minikube
+    ##############################
+    - name: Start Minikube
+      run: |
+        minikube start --driver=docker --memory=4096 --cpus=2
+        kubectl config use-context minikube
+
+    ##############################
+    # 4️⃣ Construire l’image Docker Compose dans Minikube
+    ##############################
+    - name: Build Docker image in Minikube
+      run: |
+        eval $(minikube -p minikube docker-env)
+        docker-compose -f ./webtest/webtest/docker-compose.yaml build
+
+    ##############################
+    # 5️⃣ Déployer Spring Boot + H2 dans K8s
+    ##############################
+    - name: Apply Kubernetes manifests
+      run: |
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml || true
+        kubectl wait --for=condition=available --timeout=120s deployment/springboot-deployment
+
+    ##############################
+    # 6️⃣ Installer Terraform et appliquer l’infra
+    ##############################
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.7
+
+    - name: Terraform apply
+      working-directory: ./terraform
+      env:
+        KUBECONFIG: ${{ github.workspace }}/.kube/config
+      run: |
+        terraform init
+        terraform plan -out=tfplan
+        terraform apply -auto-approve tfplan
+
+    ##############################
+    # 7️⃣ Vérifier le déploiement
+    ##############################
+    - name: Get pods & services
+      run: |
+        kubectl get pods -o wide
+        kubectl get svc -o wide
+        minikube service springboot-service --url
 
