@@ -68,6 +68,7 @@ jobs:
         eval $(minikube -p minikube docker-env)
         docker compose -f ./webtest/webtest/docker-compose.yaml build
         docker images
+        # ✅ Charger l'image locale dans Minikube
         minikube image load springboot-app:latest
 
     ##############################
@@ -75,21 +76,32 @@ jobs:
     ##############################
     - name: Apply Kubernetes manifests
       run: |
+        # ✅ Corriger l'annotation ingress (deprecated)
+        sed -i 's/kubernetes.io\/ingress.class/nginx/g' k8s/ingress.yaml || true
+
+        # ✅ Appliquer les manifests
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/ingress.yaml || true
+
+        echo "Pods after deployment:"
         kubectl get pods -o wide
-        kubectl wait --for=condition=available --timeout=300s deployment/springboot-deployment
+
+        echo "⏳ Waiting for rollout to finish..."
+        kubectl rollout status deployment/springboot-deployment --timeout=480s
 
     ##############################
-    # 7️⃣ Vérifier les logs du Pod (debug en cas d’échec)
+    # 7️⃣ Debug automatique en cas d’échec
     ##############################
     - name: Debug pod startup
       if: failure()
       run: |
+        echo "---- PODS ----"
         kubectl get pods -o wide
-        kubectl describe deployment springboot-deployment
-        kubectl logs -l app=springboot-app --tail=50 || true
+        echo "---- DESCRIBE ----"
+        kubectl describe pod $(kubectl get pod -l app=springboot-app -o jsonpath='{.items[0].metadata.name}') || true
+        echo "---- LOGS ----"
+        kubectl logs -l app=springboot-app --tail=100 || true
 
     ##############################
     # 8️⃣ Installer et exécuter Terraform
