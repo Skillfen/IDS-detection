@@ -61,15 +61,15 @@ jobs:
         minikube status
 
     ##############################
-    # 5️⃣ Construire l’image Docker Compose dans Minikube
+    # 5️⃣ Construire et charger l’image Docker dans Minikube
     ##############################
     - name: Build Docker image in Minikube
       run: |
         eval $(minikube -p minikube docker-env)
         docker compose -f ./webtest/webtest/docker-compose.yaml build
         docker images
-        # ✅ Charger l'image locale dans Minikube
-        minikube image load springboot-app:latest
+        # ✅ Charger l'image correcte dans Minikube
+        minikube image load mohamedelhamzi203/idsdetection:latest
 
     ##############################
     # 6️⃣ Déployer Spring Boot + H2 dans Kubernetes
@@ -78,15 +78,12 @@ jobs:
       run: |
         # ✅ Corriger l'annotation ingress (deprecated)
         sed -i 's/kubernetes.io\/ingress.class/nginx/g' k8s/ingress.yaml || true
-
         # ✅ Appliquer les manifests
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/ingress.yaml || true
-
         echo "Pods after deployment:"
         kubectl get pods -o wide
-
         echo "⏳ Waiting for rollout to finish..."
         kubectl rollout status deployment/springboot-deployment --timeout=480s
 
