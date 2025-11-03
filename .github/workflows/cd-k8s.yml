@@ -68,7 +68,6 @@ jobs:
         eval $(minikube -p minikube docker-env)
         docker compose -f ./webtest/webtest/docker-compose.yaml build
         docker images
-        # ✅ Charger l'image correcte dans Minikube
         minikube image load mohamedelhamzi203/idsdetection:latest
 
     ##############################
@@ -76,9 +75,7 @@ jobs:
     ##############################
     - name: Apply Kubernetes manifests
       run: |
-        # ✅ Corriger l'annotation ingress (deprecated)
         sed -i 's/kubernetes.io\/ingress.class/nginx/g' k8s/ingress.yaml || true
-        # ✅ Appliquer les manifests
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/ingress.yaml || true
@@ -105,7 +102,7 @@ jobs:
     # 8️⃣ Installer et exécuter Terraform
     ##############################
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1.6.7
+      uses: hashicorp/setup-terraform@v2.26.0
       with:
         terraform_version: 1.6.7
 
